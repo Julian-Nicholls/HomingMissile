@@ -26,7 +26,7 @@ public class MissileScript : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 
 		if (target == null) {
 			Destroy (gameObject);
@@ -41,7 +41,19 @@ public class MissileScript : MonoBehaviour {
 			//and i have to thank the unity community for it
 			//http://answers.unity3d.com/questions/161202/physics-based-homing-missile.html
 
-			Vector3 targetDelta = target.transform.position - transform.position;
+			float dotProduct = Vector3.Dot (Vector3.up, rb.velocity);
+
+			Vector3 targetDelta;
+
+			if (dotProduct <= 0.5f) {
+				targetDelta = (target.transform.position - rb.velocity) - transform.position;
+
+			} else {
+				targetDelta = (target.transform.position - rb.velocity/2) - transform.position;
+
+			}
+
+
 
 			float angleDelta = Vector3.Angle (transform.up, targetDelta);
 
@@ -49,7 +61,11 @@ public class MissileScript : MonoBehaviour {
 
 			rb.AddTorque (crossProduct * angleDelta * rotationForce);
 
-			rb.AddForce (transform.up * flightForce();
+			//-- and this is me so it's a little more convoluted
+
+			//Vector3 direction = Vector3.Lerp (transform.up, rb.velocity.normalized, 0.5f);
+
+			rb.AddForce(transform.up * flightForce);
 		}
 	}
 
